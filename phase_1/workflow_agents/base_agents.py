@@ -22,12 +22,13 @@ class BaseAgent:
     
 class DirectPromptAgent(BaseAgent):
     """An agent that generates responses based on a provided prompt, without relying on its own pre-existing knowledge."""
-    def __init__(self, openai_api_key: str):
+    def __init__(self, openai_api_key: str, description: str = None):
         """Initialize the agent with the OpenAI API key.
             Parameters:
             openai_api_key (str): API key for accessing OpenAI.
+            description (str): Optional description override.
         """
-        super().__init__(openai_api_key)
+        super().__init__(openai_api_key, description)
 
     def respond(self, prompt):
         """Generate a response using the OpenAI API."""
@@ -49,9 +50,9 @@ class AugementedPromptAgent(BaseAgent):
         openai_api_key (str): API key for accessing OpenAI.
         persona (str): Persona description for the agent.
     """
-    def __init__(self, openai_api_key: str, persona: str):
+    def __init__(self, openai_api_key: str, persona: str, description: str = None):
         """Initialize the agent with given attributes."""
-        super().__init__(openai_api_key)    
+        super().__init__(openai_api_key, description)
         self.persona = persona
 
     def respond(self, input_text):
@@ -76,8 +77,8 @@ class KnowledgeAugmentedPromptAgent(BaseAgent):
     An agent that generates responses based on a provided persona and specific knowledge, 
     without relying on its own pre-existing knowledge.
     """
-    def __init__(self, openai_api_key: str, persona: str, knowledge: str):
-        super().__init__(openai_api_key)
+    def __init__(self, openai_api_key: str, persona: str, knowledge: str, description: str = None):
+        super().__init__(openai_api_key, description)
         self.persona = persona
         self.knowledge = knowledge
 
@@ -105,8 +106,8 @@ class RAGKnowledgePromptAgent(BaseAgent):
     and leverages embeddings to respond to prompts based solely on retrieved information.
     """
 
-    def __init__(self, openai_api_key: str, persona: str, chunk_size: int = 2000, chunk_overlap: int = 100):
-        super().__init__(openai_api_key)
+    def __init__(self, openai_api_key: str, persona: str, chunk_size: int = 2000, chunk_overlap: int = 100, description: str = None):
+        super().__init__(openai_api_key, description)
         self.persona = persona
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
@@ -235,8 +236,8 @@ class RAGKnowledgePromptAgent(BaseAgent):
 
 class EvaluationAgent(BaseAgent):
     """An agent that evaluates the response of a worker agent based on specific criteria, and provides feedback for improvement until a satisfactory solution is achieved or a maximum number of interactions is reached."""
-    def __init__(self, openai_api_key: str, persona: str, evaluation_criteria: str, worker_agent: BaseAgent, max_interactions: int):
-        super().__init__(openai_api_key)
+    def __init__(self, openai_api_key: str, persona: str, evaluation_criteria: str, worker_agent: BaseAgent, max_interactions: int, description: str = None):
+        super().__init__(openai_api_key, description)
         self.persona = persona
         self.evaluation_criteria = evaluation_criteria
         self.worker_agent = worker_agent
@@ -310,8 +311,8 @@ class RoutingAgent(BaseAgent):
     """
     An agent that routes user input to the most appropriate agent based on the similarity of the input to the descriptions of available agents, using embeddings for comparison.
     """
-    def __init__(self, openai_api_key: str, agents: list[BaseAgent]):
-        super().__init__(openai_api_key)
+    def __init__(self, openai_api_key: str, agents: list[BaseAgent], description: str = None):
+        super().__init__(openai_api_key, description)
         self.agents = agents
        
 
@@ -350,8 +351,8 @@ class RoutingAgent(BaseAgent):
 
 class ActionPlanningAgent(BaseAgent):
     """An agent that extracts actionable steps from a user prompt based on its knowledge, without relying on its own pre-existing knowledge."""
-    def __init__(self, openai_api_key: str, knowledge: str):
-        super().__init__(openai_api_key)
+    def __init__(self, openai_api_key: str, knowledge: str, description: str = None):
+        super().__init__(openai_api_key, description)
         self.knowledge = knowledge
        
     def extract_steps_from_prompt(self, prompt):
