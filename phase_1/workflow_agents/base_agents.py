@@ -1,6 +1,3 @@
-# TODO: 1 - import the OpenAI class from the openai library
-from email.mime import text
-
 import numpy as np
 import pandas as pd
 import re
