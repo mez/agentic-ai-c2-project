@@ -19,5 +19,5 @@ persona = "You are an evaluation agent that checks the answers of other worker a
 evaluation_criteria = "The answer should be solely the name of a city, not a sentence."
 evaluation_agent = EvaluationAgent(openai_api_key, persona, evaluation_criteria, knowledge_agent, max_interactions=10) 
 
-response = evaluation_agent.evaluate(prompt)
+response = evaluation_agent.respond(prompt)
 print(response)

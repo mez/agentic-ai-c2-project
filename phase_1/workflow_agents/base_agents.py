@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import pandas as pd
 import re
@@ -7,7 +9,7 @@ from datetime import datetime
 from openai import OpenAI
 
 # quick helper function to create an OpenAI client vocareum instance with the provided API key and base URL
-def getOpenAIClient(api_key):
+def get_openai_client(api_key):
     """Helper function to create an OpenAI client instance."""
     return OpenAI(api_key=api_key, base_url="https://openai.vocareum.com/v1")
 
@@ -17,7 +19,7 @@ class BaseAgent:
         # Use provided description or fallback to class docstring
         self.description = description if description is not None else self.__class__.__doc__ or ""
 
-    def respond(self, prompt):
+    def respond(self, prompt) -> str | List[str]:
         raise NotImplementedError("Subclasses must implement this method.")
     
 class DirectPromptAgent(BaseAgent):
@@ -91,7 +93,6 @@ class KnowledgeAugmentedPromptAgent(BaseAgent):
             messages=[
                 {"role": "system", "content": f"You are {self.persona} knowledge-based assistant. Forget all previous context."},
                 {"role": "system", "content": f"Use only the following knowledge to answer, do not use your own knowledge: {self.knowledge}"},
-                {"role": "system", "content": f"Be sure to use your persona to respond accordingly and use knowledge proviced to override your prior knowledge. Think through the answer to deduce the anwser based on your provided knowledge. The answer should be solely the name of a city, not a sentence."},
                 {"role": "user", "content": input_text}
             ],
             temperature=0
@@ -243,6 +244,9 @@ class EvaluationAgent(BaseAgent):
         self.worker_agent = worker_agent
         self.max_interactions = max_interactions
 
+    def respond(self, prompt):
+        return self.evaluate(prompt)
+    
     def evaluate(self, initial_prompt):
         # This method manages interactions between agents to achieve a solution.
         client = getOpenAIClient(self.openai_api_key)
@@ -328,6 +332,9 @@ class RoutingAgent(BaseAgent):
         embedding = response.data[0].embedding
         return embedding 
 
+    def respond(self, prompt):
+        return self.route(prompt) 
+    
     def route(self, user_input):
         input_emb = self.get_embedding(user_input)
         best_agent = None
@@ -336,7 +343,7 @@ class RoutingAgent(BaseAgent):
         for agent in self.agents:
             agent_emb = self.get_embedding(agent.description)
             similarity = np.dot(input_emb, agent_emb) / (np.linalg.norm(input_emb) * np.linalg.norm(agent_emb))
-            print(f"Similarity with {agent.description}: {similarity}")
+            # print(f"Similarity with {agent.description}: {similarity}")
             if similarity > best_score:
                 best_score = similarity
                 best_agent = agent
@@ -355,6 +362,10 @@ class ActionPlanningAgent(BaseAgent):
         super().__init__(openai_api_key, description)
         self.knowledge = knowledge
        
+    def respond(self, prompt):
+        steps = self.extract_steps_from_prompt(prompt)
+        return steps
+    
     def extract_steps_from_prompt(self, prompt):
         client = getOpenAIClient(self.openai_api_key)
         response = client.chat.completions.create(

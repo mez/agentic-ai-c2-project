@@ -53,6 +53,19 @@ Yes, the answer "London" meets the criteria as it is solely the name of a city a
 ✅ Final solution accepted.
 {'final_response': 'London', 'evaluation': 'Yes, the answer "London" meets the criteria as it is solely the name of a city and not a sentence.', 'iterations': 2}
 
+ActionPlanningAgent
+
+Steps for: One morning I wanted to have scrambled eggs
+1. Crack eggs into a bowl
+2. Beat eggs with a fork until mixed
+3. Heat pan with butter or oil over medium heat
+4. Pour egg mixture into pan
+5. Stir gently as eggs cook
+6. Remove from heat when eggs are just set but still moist
+7. Season with salt and pepper
+8. Serve immediately
+
+
 RoutingAgent
 Similarity with Answer a question about Texas: 0.3856445690947359
 Similarity with Answer a question about Europe: 0.16506476515151844

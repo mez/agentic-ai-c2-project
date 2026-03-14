@@ -51,6 +51,7 @@ product_manager_evaluation_agent = EvaluationAgent(
     evaluation_criteria="The answer should be user stories that follow this exact structure: " \
                         "As a [type of user], I want [an action or feature] so that [benefit/value].",
     worker_agent=product_manager_knowledge_agent,
+    description="An evaluation agent that checks the quality of user stories defined by the Product Manager, ensuring they are well-structured and comprehensive.",
     max_interactions=3
 )
 
@@ -63,7 +64,7 @@ program_manager_knowledge_agent = KnowledgeAugmentedPromptAgent(
     openai_api_key,
     persona=persona_program_manager,
     knowledge=knowledge_program_manager,
-    description="A Program Manager who groups user stories into product features."
+    description="You are a Program Manager, you are responsible for defining the features for a product."
 )
 
 # Program Manager - Evaluation Agent
@@ -83,7 +84,8 @@ program_manager_evaluation_agent = EvaluationAgent(
     persona=persona_program_manager_eval,
     evaluation_criteria=evaluation_criteria,
     worker_agent=program_manager_knowledge_agent,
-    max_interactions=3
+    description="An evaluation agent that checks the quality of product features defined by the Program Manager, ensuring they are well-structured and comprehensive.",
+    max_interactions=10
 )
 
 # Development Engineer - Knowledge Augmented Prompt Agent
@@ -114,7 +116,8 @@ development_engineer_evaluation_agent = EvaluationAgent(
     persona=persona_dev_engineer_eval,
     evaluation_criteria=development_engineer_evaluation_criteria,
     worker_agent=development_engineer_knowledge_agent,
-    max_interactions=3
+    max_interactions=10,
+    description="An evaluation agent that checks the quality of development tasks defined by the Development Engineer, ensuring they are well-structured and comprehensive."
 )
 
 
@@ -135,13 +138,13 @@ workflow_prompt = "What would the development tasks for this product be?"
 print(f"Task to complete in this workflow, workflow prompt = {workflow_prompt}")
 
 print("\nDefining workflow steps from the workflow prompt")
-steps = action_planning_agent.extract_steps_from_prompt(workflow_prompt)
+steps = action_planning_agent.respond(workflow_prompt)
 print(f"Workflow steps: {steps}\n")
 
 completed_steps = []
 for i, step in enumerate(steps):
     print(f"\n--- Step {i + 1}: {step} ---")
-    result = routing_agent.route(step)
+    result = routing_agent.respond(step)
     completed_steps.append(result)
     print(f"Result:\n{result}")
 
